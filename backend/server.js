@@ -73,13 +73,47 @@ app.post("/problems",(req,res)=>{
 
 app.post("/register",async (req,res)=>{
     try{
-        const user = new User(req.body);
+        const {username, email, password} = req.body;
+        const hashed = await bcrypt.hash(password,10);
+        const user = new User({
+            username,
+            email,
+            password: hashed
+        });
         await user.save();
         res.status(201).json({
             message: "User created",
             user
         });
     }catch(err){
+        res.status(500).json({
+            error: err
+        });
+    }
+});
+
+app.post("/login",async(req,res)=>{
+    try{
+        const {email,password} = req.body;
+        const user = await User.findOne({email});
+        if(!user){
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+        const isMatch = await bcrypt.compare(
+            password,
+            user.password
+        );
+        if(!isMatch){
+            return res.status(404).json({
+                message: "Invalid credentials"
+            });
+        }
+        res.json({
+            message: "Login successful"
+        });
+    } catch(err){
         res.status(500).json({
             error: err
         });
