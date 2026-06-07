@@ -2,6 +2,10 @@ const express = require("express");
 const mongoose = require("mongoose");
 const User = require("./models/user");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const auth = require("./middleware/auth");
+
+const JWT_SECRET = "mysecretkey";
 
 const app = express();
 
@@ -62,6 +66,13 @@ app.get("/users",async (req,res)=>{
     res.status(201).json(users);
 });
 
+app.get("/profile",auth,(req,res)=>{
+    res.json({
+        message: "Protected rout accessed",
+        user: req.user
+    });
+});
+
 app.post("/problems",(req,res)=>{
     const newproblem = req.body;
     problems.push(newproblem);
@@ -106,12 +117,23 @@ app.post("/login",async(req,res)=>{
             user.password
         );
         if(!isMatch){
-            return res.status(404).json({
+            return res.status(401).json({
                 message: "Invalid credentials"
             });
         }
+        const token = jwt.sign(
+            {
+                id: user._id,
+                email: user.email
+            },
+            JWT_SECRET,
+            {
+                expiresIn: "1h"
+            }
+        );
         res.json({
-            message: "Login successful"
+            message: "Login successful",
+            token
         });
     } catch(err){
         res.status(500).json({
