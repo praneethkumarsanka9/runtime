@@ -68,9 +68,14 @@ app.get("/users",async (req,res)=>{
 
 app.get("/profile",auth,(req,res)=>{
     res.json({
-        message: "Protected rout accessed",
+        message: "Protected route accessed",
         user: req.user
     });
+});
+
+app.get("/me",auth,async (req,res)=>{
+    const user = await User.findById(req.user.id).select("-password");
+    res.json(user);
 });
 
 app.post("/problems",(req,res)=>{
