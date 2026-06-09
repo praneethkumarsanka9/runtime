@@ -4,6 +4,7 @@ const User = require("./models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const auth = require("./middleware/auth");
+const Problem = require("./models/problem");
 
 const JWT_SECRET = "mysecretkey";
 
@@ -47,7 +48,8 @@ const problems = [
     }
 ];
 
-app.get("/problems",(req,res)=>{
+app.get("/problems",async(req,res)=>{
+    const problems = await Problem.find();
     res.json(problems);
 });
 
@@ -78,13 +80,21 @@ app.get("/me",auth,async (req,res)=>{
     res.json(user);
 });
 
-app.post("/problems",(req,res)=>{
-    const newproblem = req.body;
-    problems.push(newproblem);
-    res.json({
-        message: "Problem added",
-        problem: newproblem
-    });
+app.post("/problems",auth,async(req,res)=>{
+    try{
+        const problem = await Problem.create({
+            title: req.body.title,
+            description: req.body.description,
+            input: req.body.input,
+            output: req.body.output,
+            createdBy: req.user.id
+        });
+        res.status(201).json(problem);
+    }catch(err){
+        res.status(500).json({
+            message: "Error creating problem"
+        });
+    }
 });
 
 app.post("/register",async (req,res)=>{
