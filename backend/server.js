@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const auth = require("./middleware/auth");
 const Problem = require("./models/problem");
+const Submission = require("./models/submission");
 
 const JWT_SECRET = "mysecretkey";
 
@@ -80,6 +81,13 @@ app.get("/me",auth,async (req,res)=>{
     res.json(user);
 });
 
+app.get("/submissons",auth,async(req,res)=>{
+    const submission = await Submission.find({
+        user: req.user.id
+    });
+    res.json(submission);
+});
+
 app.post("/problems",auth,async(req,res)=>{
     try{
         const problem = await Problem.create({
@@ -100,6 +108,12 @@ app.post("/problems",auth,async(req,res)=>{
 app.post("/register",async (req,res)=>{
     try{
         const {username, email, password} = req.body;
+        const already = await User.findOne({email});
+        if(already){
+            return res.json({
+                message: "User already exist with this email"
+            });
+        }
         const hashed = await bcrypt.hash(password,10);
         const user = new User({
             username,
@@ -153,6 +167,22 @@ app.post("/login",async(req,res)=>{
     } catch(err){
         res.status(500).json({
             error: err
+        });
+    }
+});
+
+app.post("/submit",auth,async(req,res)=>{
+    try{
+        const submission = await Submission.create({
+            user:req.user.id,
+            problem:req.body.problemId,
+            code: req.body.code,
+            language: req.body.language
+        });
+        res.status(201).json(submission);
+    }catch(err){
+        res.status(500).json({
+            message: "Submission failed"
         });
     }
 });
