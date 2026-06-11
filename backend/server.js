@@ -54,14 +54,22 @@ app.get("/problems",async(req,res)=>{
     res.json(problems);
 });
 
-app.get("/problems/:id",(req,res)=>{
-    const problem = problems.find(p => p.id == req.params.id);
-    if(!problem){
-        return res.status(404).json({
-            message: "Problem not found"
+app.get("/problems/:id",async(req,res)=>{
+    try{
+        const problem = await Problem.findById(req.params.id);
+
+        if(!problem){
+            return res.status(404).json({
+                message:"Problem not found"
+            });
+        }
+
+        res.json(problem);
+    }catch(err){
+        res.status(500).json({
+            message:"Server error"
         });
     }
-    res.json(problem);
 });
 
 app.get("/users",async (req,res)=>{
@@ -84,7 +92,9 @@ app.get("/me",auth,async (req,res)=>{
 app.get("/submissons",auth,async(req,res)=>{
     const submission = await Submission.find({
         user: req.user.id
-    });
+    })
+    .populate("problem")
+    .populate("user","-password");
     res.json(submission);
 });
 
