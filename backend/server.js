@@ -115,6 +115,44 @@ app.post("/problems",auth,async(req,res)=>{
     }
 });
 
+app.put("/problems/:id",auth,async(req,res)=>{
+    const problem = await Problem.findById(req.params.id);
+    if(problem.createdBy.toString() != req.user.id){
+        return res.status(403).json({
+            message: "Not authorized"
+        });
+    }
+    try{
+        const updated = await Problem.findByIdAndUpdate(
+            req.params.id,req.body,{new:true}
+        );
+        res.json(updated);
+    }catch(err){
+        res.status(500).json({
+            message: "Update failed"
+        });
+    }
+});
+
+app.delete("/problems/:id",auth,async(req,res)=>{
+    const problem = await Problem.findById(req.params.id);
+    if(problem.createdBy.toString() != req.user.id){
+        return res.status(403).json({
+            message: "Not authorized"
+        });
+    }
+    try{
+        await Problem.findByIdAndDelete(req.params.id);
+        res.json({
+            message:"Problem deleted"
+        });
+    }catch(err){
+        res.status(500).json({
+            message: "Deletion failed"
+        });
+    }
+});
+
 app.post("/register",async (req,res)=>{
     try{
         const {username, email, password} = req.body;

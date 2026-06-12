@@ -14,17 +14,17 @@ const submissionSchema = new mongoose.Schema({
     },
 
     code:{
-        type:String,
+        type: String,
         required: true
     },
 
     language:{
-        type:String,
+        type: String,
         default:"cpp"
     },
 
     verdict:{
-        type:String,
+        type: String,
         default:"Pending"
     }
 
