@@ -6,6 +6,10 @@ const jwt = require("jsonwebtoken");
 const auth = require("./middleware/auth");
 const Problem = require("./models/problem");
 const Submission = require("./models/submission");
+const fs = require("fs");
+const { exec } = require("child_process");
+const { error } = require("console");
+
 
 const JWT_SECRET = "mysecretkey";
 
@@ -233,6 +237,25 @@ app.post("/submit",auth,async(req,res)=>{
             message: "Submission failed"
         });
     }
+});
+
+app.post("/run",(req,res)=>{
+    const code = req.body.code;
+
+    fs.writeFileSync("temp.cpp",code);
+    exec(
+        "g++ temp.cpp -o run && ./run",
+        (error,stdout,stderr)=>{
+            if(error){
+                return res.json({
+                    error: stderr
+                });
+            }
+            res.json({
+                output: stdout
+            });
+        }
+    );
 });
 
 app.listen(3000,()=>{
