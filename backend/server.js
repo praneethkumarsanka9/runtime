@@ -9,6 +9,7 @@ const Submission = require("./models/submission");
 const fs = require("fs");
 const { exec } = require("child_process");
 const { error } = require("console");
+const expected = fs.readFileSync("./testcases/expected.txt","utf8");
 
 
 const JWT_SECRET = "mysecretkey";
@@ -244,16 +245,24 @@ app.post("/run",(req,res)=>{
 
     fs.writeFileSync("temp.cpp",code);
     exec(
-        "g++ temp.cpp -o run && ./run",
+        "g++ temp.cpp -o run && ./run < ./testcases/input.txt",
         (error,stdout,stderr)=>{
             if(error){
                 return res.json({
                     error: stderr
                 });
             }
-            res.json({
-                output: stdout
-            });
+            const output = stdout;
+            if(output.trim() === expected.trim()){
+                res.json({
+                    output: output,
+                    verdict: "Accepted"
+                });
+            }else{
+                res.json({
+                    verdict: "Wrong Answer"
+                });
+            }
         }
     );
 });
