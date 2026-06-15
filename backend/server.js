@@ -9,7 +9,8 @@ const Submission = require("./models/submission");
 const fs = require("fs");
 const { exec } = require("child_process");
 const { error } = require("console");
-const expected = fs.readFileSync("./testcases/expected.txt","utf8");
+const util = require("util");
+const execPromise = util.promisify(exec);
 
 
 const JWT_SECRET = "mysecretkey";
@@ -240,31 +241,30 @@ app.post("/submit",auth,async(req,res)=>{
     }
 });
 
-app.post("/run",(req,res)=>{
+app.post("/run",async(req,res)=>{
     const code = req.body.code;
-
     fs.writeFileSync("temp.cpp",code);
-    exec(
-        "g++ temp.cpp -o run && ./run < ./testcases/input.txt",
-        (error,stdout,stderr)=>{
-            if(error){
+    try{
+        await execPromise("g++ temp.cpp -o run");
+
+        for(let i = 1;i<=3;i++){
+            const expected = fs.readFileSync(`./testcases/expected${i}.txt`,"utf8");
+            const { stdout } = await execPromise(`./run < ./testcases/input${i}.txt`);
+            if( stdout.trim() !== expected.trim() ){
                 return res.json({
-                    error: stderr
-                });
-            }
-            const output = stdout;
-            if(output.trim() === expected.trim()){
-                res.json({
-                    output: output,
-                    verdict: "Accepted"
-                });
-            }else{
-                res.json({
-                    verdict: "Wrong Answer"
+                    verdict: "Wrong answer",
+                    failedTestCase: i
                 });
             }
         }
-    );
+        return res.status(200).json({
+            verdict: "Accepted"
+        });
+    }catch(err){
+        return res.json({
+            error: err.stderr || err.message
+        });
+    }    
 });
 
 app.listen(3000,()=>{
