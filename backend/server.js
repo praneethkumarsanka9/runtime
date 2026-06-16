@@ -97,11 +97,18 @@ app.get("/me",auth,async (req,res)=>{
 
 app.get("/submissons",auth,async(req,res)=>{
     const submission = await Submission.find({
-        user: req.user.id
+        user: req.user.id,
+        problem: req.body.problemId
     })
-    .populate("problem")
-    .populate("user","-password");
-    res.json(submission);
+    .populate("problem","title")
+    .populate("user","username");
+    if(submission.length > 0){
+        res.json(submission);
+    }else{
+        res.json({
+            message: "No submissions made"
+        });
+    }
 });
 
 app.post("/problems",auth,async(req,res)=>{
@@ -226,24 +233,13 @@ app.post("/login",async(req,res)=>{
 });
 
 app.post("/submit",auth,async(req,res)=>{
-    try{
-        const submission = await Submission.create({
+    const submission = await Submission.create({
             user:req.user.id,
             problem:req.body.problemId,
             code: req.body.code,
             language: req.body.language
-        });
-        res.status(201).json(submission);
-    }catch(err){
-        res.status(500).json({
-            message: "Submission failed"
-        });
-    }
-});
-
-app.post("/run",async(req,res)=>{
-    const code = req.body.code;
-    fs.writeFileSync("temp.cpp",code);
+    });
+    fs.writeFileSync("temp.cpp",submission.code);
     try{
         await execPromise("g++ temp.cpp -o run");
 
@@ -251,20 +247,25 @@ app.post("/run",async(req,res)=>{
             const expected = fs.readFileSync(`./testcases/expected${i}.txt`,"utf8");
             const { stdout } = await execPromise(`./run < ./testcases/input${i}.txt`);
             if( stdout.trim() !== expected.trim() ){
+                submission.verdict = "Wrong Answer";
+                await submission.save();
                 return res.json({
                     verdict: "Wrong answer",
                     failedTestCase: i
                 });
             }
         }
+        submission.verdict = "Accepted";
+        await submission.save();
         return res.status(200).json({
+            submissionId : submission._id,
             verdict: "Accepted"
         });
     }catch(err){
         return res.json({
             error: err.stderr || err.message
         });
-    }    
+    }
 });
 
 app.listen(3000,()=>{
