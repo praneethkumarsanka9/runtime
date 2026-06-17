@@ -11,16 +11,12 @@ const problemSchema = new mongoose.Schema({
         required:true
     },
 
-    input:{
-        type: String,
-        required: true
-    },
-
-    output:{
-        type: String,
-        required: true
-    },
-
+    testcases:[
+        {
+            input: String,
+            output: String
+        }
+    ],
     createdBy:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"

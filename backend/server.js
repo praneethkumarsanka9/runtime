@@ -116,8 +116,7 @@ app.post("/problems",auth,async(req,res)=>{
         const problem = await Problem.create({
             title: req.body.title,
             description: req.body.description,
-            input: req.body.input,
-            output: req.body.output,
+            testcases: req.body.testcases,
             createdBy: req.user.id
         });
         res.status(201).json(problem);
@@ -156,6 +155,9 @@ app.delete("/problems/:id",auth,async(req,res)=>{
     }
     try{
         await Problem.findByIdAndDelete(req.params.id);
+        await Submission.deleteMany({
+            problem: req.params.id
+        });
         res.json({
             message:"Problem deleted"
         });
@@ -239,21 +241,24 @@ app.post("/submit",auth,async(req,res)=>{
             code: req.body.code,
             language: req.body.language
     });
+    const problem = await Problem.findById(submission.problem);
     fs.writeFileSync("temp.cpp",submission.code);
     try{
         await execPromise("g++ temp.cpp -o run");
-
-        for(let i = 1;i<=3;i++){
-            const expected = fs.readFileSync(`./testcases/expected${i}.txt`,"utf8");
-            const { stdout } = await execPromise(`./run < ./testcases/input${i}.txt`);
-            if( stdout.trim() !== expected.trim() ){
+        let c = 1;
+        for(const testcase of problem.testcases){
+            fs.writeFileSync("./testcases/input.txt",testcase.input);
+            const { stdout } = await execPromise(`./run < ./testcases/input.txt`);
+            console.log(stdout.trim());
+            if( stdout.trim() !== testcase.output.trim() ){
                 submission.verdict = "Wrong Answer";
                 await submission.save();
                 return res.json({
                     verdict: "Wrong answer",
-                    failedTestCase: i
+                    failedTestCase: c
                 });
             }
+            c++;
         }
         submission.verdict = "Accepted";
         await submission.save();
