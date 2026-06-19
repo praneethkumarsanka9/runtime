@@ -10,6 +10,7 @@ const fs = require("fs");
 const { exec } = require("child_process");
 const { error } = require("console");
 const util = require("util");
+const { stderr } = require("process");
 const execPromise = util.promisify(exec);
 
 
@@ -69,7 +70,7 @@ app.get("/problems/:id",async(req,res)=>{
                 message:"Problem not found"
             });
         }
-
+        
         res.json(problem);
     }catch(err){
         res.status(500).json({
@@ -243,12 +244,32 @@ app.post("/submit",auth,async(req,res)=>{
     });
     const problem = await Problem.findById(submission.problem);
     fs.writeFileSync("temp.cpp",submission.code);
-    try{
-        await execPromise("g++ temp.cpp -o run");
+
         let c = 1;
+        try{
+            const { stdout } = await execPromise(`docker run --rm -v ${process.cwd()}:/app cpp-runner:latest bash -c "g++ temp.cpp -o run"`);
+        }catch(err){
+            submission.verdict = "Compilation error";
+            submission.save();
+            return res.json({
+                verdict: "Compilation error",
+                error: err.stderr
+            });
+        }
         for(const testcase of problem.testcases){
             fs.writeFileSync("./testcases/input.txt",testcase.input);
-            const { stdout } = await execPromise(`./run < ./testcases/input.txt`);
+            let stdout;
+            try{
+                const result = await execPromise(`docker run --rm -v ${process.cwd()}:/app cpp-runner:latest bash -c "./run < ./testcases/input.txt"`);
+                stdout = result.stdout;
+            }catch(err){
+                submission.verdict = "Runtime error";
+                submission.save();
+                return res.json({
+                    verdict: "Runtime error",
+                    error: err.stderr
+                });
+            }
             console.log(stdout.trim());
             if( stdout.trim() !== testcase.output.trim() ){
                 submission.verdict = "Wrong Answer";
@@ -266,11 +287,6 @@ app.post("/submit",auth,async(req,res)=>{
             submissionId : submission._id,
             verdict: "Accepted"
         });
-    }catch(err){
-        return res.json({
-            error: err.stderr || err.message
-        });
-    }
 });
 
 app.listen(3000,()=>{
