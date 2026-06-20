@@ -260,9 +260,16 @@ app.post("/submit",auth,async(req,res)=>{
             fs.writeFileSync("./testcases/input.txt",testcase.input);
             let stdout;
             try{
-                const result = await execPromise(`docker run --rm -v ${process.cwd()}:/app cpp-runner:latest bash -c "./run < ./testcases/input.txt"`);
+                const result = await execPromise(`docker run --rm --memory=256m --cpus=0.5 -v ${process.cwd()}:/app cpp-runner:latest bash -c "timeout 2s ./run < ./testcases/input.txt"`);
                 stdout = result.stdout;
             }catch(err){
+                if(err.code == 124){
+                    submission.verdict = "Time Limit Exceeded";
+                    submission.save();
+                    return res.json({
+                        verdict: "Time Limit Exceeded"
+                    });
+                }
                 submission.verdict = "Runtime error";
                 submission.save();
                 return res.json({
