@@ -14,11 +14,13 @@ const util = require("util");
 const { stderr } = require("process");
 const execPromise = util.promisify(exec);
 const judgeSubmission = require("./services/runtime_services");
+const cors = require("cors");
 
 
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 function logger(req,res,next){
     console.log(`${req.method} ${req.url}`);
