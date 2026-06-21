@@ -1,4 +1,5 @@
 #include <iostream>
  using namespace std;
-int main(){while(1){}
-}
+int main(){int a,b;
+ cin>>a>>b;
+ cout << a-b;}

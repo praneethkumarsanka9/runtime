@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const User = require("./models/user");
@@ -12,9 +13,8 @@ const { error } = require("console");
 const util = require("util");
 const { stderr } = require("process");
 const execPromise = util.promisify(exec);
+const judgeSubmission = require("./services/runtime_services");
 
-
-const JWT_SECRET = "mysecretkey";
 
 const app = express();
 
@@ -27,7 +27,7 @@ function logger(req,res,next){
 
 app.use(logger);
 
-mongoose.connect("mongodb+srv://runtimeadmin:pinguking@cluster0.mkxpfma.mongodb.net/runtime?retryWrites=true&w=majority&appName=Cluster0")
+mongoose.connect(process.env.MONGO_URL)
 .then(()=>{
     console.log("MongoDB connected succesfully");
 })
@@ -219,7 +219,7 @@ app.post("/login",async(req,res)=>{
                 id: user._id,
                 email: user.email
             },
-            JWT_SECRET,
+            process.env.JWT_SECRET,
             {
                 expiresIn: "1h"
             }
@@ -243,59 +243,16 @@ app.post("/submit",auth,async(req,res)=>{
             language: req.body.language
     });
     const problem = await Problem.findById(submission.problem);
-    fs.writeFileSync("temp.cpp",submission.code);
-
-        let c = 1;
-        try{
-            const { stdout } = await execPromise(`docker run --rm -v ${process.cwd()}:/app cpp-runner:latest bash -c "g++ temp.cpp -o run"`);
-        }catch(err){
-            submission.verdict = "Compilation error";
-            submission.save();
-            return res.json({
-                verdict: "Compilation error",
-                error: err.stderr
-            });
-        }
-        for(const testcase of problem.testcases){
-            fs.writeFileSync("./testcases/input.txt",testcase.input);
-            let stdout;
-            try{
-                const result = await execPromise(`docker run --rm --memory=256m --cpus=0.5 -v ${process.cwd()}:/app cpp-runner:latest bash -c "timeout 2s ./run < ./testcases/input.txt"`);
-                stdout = result.stdout;
-            }catch(err){
-                if(err.code == 124){
-                    submission.verdict = "Time Limit Exceeded";
-                    submission.save();
-                    return res.json({
-                        verdict: "Time Limit Exceeded"
-                    });
-                }
-                submission.verdict = "Runtime error";
-                submission.save();
-                return res.json({
-                    verdict: "Runtime error",
-                    error: err.stderr
-                });
-            }
-            console.log(stdout.trim());
-            if( stdout.trim() !== testcase.output.trim() ){
-                submission.verdict = "Wrong Answer";
-                await submission.save();
-                return res.json({
-                    verdict: "Wrong answer",
-                    failedTestCase: c
-                });
-            }
-            c++;
-        }
-        submission.verdict = "Accepted";
-        await submission.save();
-        return res.status(200).json({
+    const result = await judgeSubmission(submission.code,problem.testcases);
+    submission.verdict = result.verdict;       
+    await submission.save();
+    res.status(200).json({
             submissionId : submission._id,
-            verdict: "Accepted"
-        });
+            ...result
+    });
+    
 });
 
-app.listen(3000,()=>{
-    console.log("Server is running on port 3000");
+app.listen(process.env.PORT,()=>{
+    console.log(`Server is running on port ${process.env.PORT}`);
 });
