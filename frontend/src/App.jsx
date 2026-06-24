@@ -1,22 +1,15 @@
-import axios from "axios";
+import React from "react";
+import { Route,Routes } from "react-router-dom";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 function App(){
-  async function  testBackend(){
-    try{
-      const res = await axios.get("http://localhost:3000/problems");
-      console.log(res.data);
-    }catch(err){
-      console.log(err);
-    }
-  }
-  return (
-    <div>
-      <h1>Runtime</h1>
-      <button onClick={testBackend}>
-         Test Backend
-      </button>
-    </div>
-  );
+    return (
+      <Routes>
+        <Route path="/login" element={<Login/>}/>
+        <Route path="/register" element={<Register/>}/>
+      </Routes>
+    )
 }
 
 export default App;
