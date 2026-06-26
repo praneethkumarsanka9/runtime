@@ -3,6 +3,8 @@ import { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import "./Login.css";
+import logo from "../assets/logo.jpg.jpeg";
 function Login(){
     const[email,setEmail] = useState("");
     const [password,setPassword] = useState("");
@@ -13,39 +15,55 @@ function Login(){
       e.preventDefault();
       try{
          const res = await axios.post("http://localhost:3000/login",{email,password});
-         navigate("/register",{replace: true});
+         localStorage.setItem("token",res.data.token);
+         navigate("/problems",{replace: true});
       }catch(err){
         console.log(err.response.data);
+        setMessage(err.response.data.message);
+        setEmail("");
+        setPassword("");
       }
     }
 
     return(
-       <div>
-          <form onSubmit={handle}>
-          <input
+       <div id="box">
+       <div id="contents">
+          <div id="matter">
+            <img id="logo" src={logo} alt="Logo" />
+            <form onSubmit={handle}>
+          <div id="em">
+            <label>Email</label>
+            <input
              type="email"
-             placeholder="Email"
+             placeholder=""
              value={email}
+             className="input"
              onChange={(e)=>setEmail(e.target.value)}
           />
-          <br/><br/>
+          </div>
+          
 
-          <input
+          <div id="pa">
+            <label>Password</label>
+            <input
              type="password"
-             placeholder="Password"
+             placeholder=""
+             className="input"
              value={password}
              onChange={(e)=>setPassword(e.target.value)}
           />
+          </div>
           <br/><br/>
-
-          <button type="submit">
+          <h5 id="msg">{message}</h5>
+          <button type="submit" id="btn">
             Login
           </button>
        </form>
-       <Link to="/register">
+       <Link to="/register" id="link">
            Don't have an account? Register
        </Link>
-       <h6>{message}</h6>
+          </div>
+       </div>
        </div>
     );
 }
