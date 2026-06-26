@@ -15,12 +15,22 @@ const { stderr } = require("process");
 const execPromise = util.promisify(exec);
 const judgeSubmission = require("./services/runtime_services");
 const cors = require("cors");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+const transporter = nodemailer.createTransport({
+     service: "gmail",
+     auth:{
+        user: process.env.EMAIL,
+        pass: process.env.APP_PASSWORD
+     }
+});
 
 function logger(req,res,next){
     console.log(`${req.method} ${req.url}`);
@@ -171,8 +181,31 @@ app.delete("/problems/:id",auth,async(req,res)=>{
     }
 });
 
+app.get("/verify/:token", async(req,res) =>{
+    const user = await User.findOne({
+        verificationToken: req.params.token
+    });
+
+    if(!user){
+        return res.status(400).json({
+            message: "Invalid link"
+        });
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+
+    await user.save();
+
+    res.status(200).json({
+        message: "Email verified successfully"
+    });
+});
+
 app.post("/register",async (req,res)=>{
     try{
+        
+        const token = crypto.randomBytes(32).toString("hex");
         const {username, email, password} = req.body;
         const already = await User.findOne({email});
         if(already){
@@ -184,11 +217,28 @@ app.post("/register",async (req,res)=>{
         const user = new User({
             username,
             email,
-            password: hashed
+            password: hashed,
+            verificationToken: token
         });
         await user.save();
+        try{
+            const info = await transporter.sendMail({
+            from: process.env.EMAIL,
+            to: email,
+            subject: "Verify your email",
+            html: `
+            <h2>Click below to verify your account</h2>
+            <a href="http://localhost:3000/verify/${token}">
+            Verify Email
+            </a>
+            `
+        });
+        console.log(info);
+        }catch(err){
+            console.log(err);
+        }
         res.status(201).json({
-            message: "Registered",
+            message: "Email sent for verification",
             user
         });
     }catch(err){
@@ -206,6 +256,11 @@ app.post("/login",async(req,res)=>{
             return res.status(404).json({
                 message: "User not found"
             });
+        }
+        if(!user.isVerified) {
+           return res.status(400).json({
+           message: "Please verify your email first"
+        });
         }
         const isMatch = await bcrypt.compare(
             password,

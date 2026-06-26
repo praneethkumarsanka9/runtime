@@ -23,7 +23,7 @@ function Register(){
             console.log("success");
             setTimeout(() => {
                 navigate("/login");
-            },2000);
+            },3000);
         }catch(err){
             setUsername("");
             setEmail("");
