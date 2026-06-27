@@ -68,12 +68,18 @@ const problems = [
     }
 ];
 
-app.get("/problems",async(req,res)=>{
-    const problems = await Problem.find();
-    res.json(problems);
+app.get("/problems",auth,async(req,res)=>{
+    try{
+        const problems = await Problem.find();
+        res.json(problems);
+    }catch(err){
+        res.status(500).json({
+            message: "Failed to fetch problems"
+        });
+    }
 });
 
-app.get("/problems/:id",async(req,res)=>{
+app.get("/problems/:id",auth,async(req,res)=>{
     try{
         const problem = await Problem.findById(req.params.id);
 
@@ -129,6 +135,7 @@ app.post("/problems",auth,async(req,res)=>{
         const problem = await Problem.create({
             title: req.body.title,
             description: req.body.description,
+            difficulty: req.body.difficulty,
             testcases: req.body.testcases,
             createdBy: req.user.id
         });
@@ -221,6 +228,10 @@ app.post("/register",async (req,res)=>{
             verificationToken: token
         });
         await user.save();
+        res.status(201).json({
+            message: "Email sent for verification",
+            user
+        });
         try{
             const info = await transporter.sendMail({
             from: process.env.EMAIL,
@@ -228,7 +239,7 @@ app.post("/register",async (req,res)=>{
             subject: "Verify your email",
             html: `
             <h2>Click below to verify your account</h2>
-            <a href="http://localhost:3000/verify/${token}">
+            <a href="http://localhost:5173/verify/${token}">
             Verify Email
             </a>
             `
@@ -237,10 +248,6 @@ app.post("/register",async (req,res)=>{
         }catch(err){
             console.log(err);
         }
-        res.status(201).json({
-            message: "Email sent for verification",
-            user
-        });
     }catch(err){
         res.status(500).json({
             error: err

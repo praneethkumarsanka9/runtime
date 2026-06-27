@@ -10,6 +10,11 @@ const problemSchema = new mongoose.Schema({
         type: String,
         required:true
     },
+    
+    difficulty:{
+        type: String,
+        require:true
+    },
 
     testcases:[
         {
