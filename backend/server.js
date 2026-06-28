@@ -237,14 +237,12 @@ app.post("/register",async (req,res)=>{
             from: process.env.EMAIL,
             to: email,
             subject: "Verify your email",
-            html: `
-            <h2>Click below to verify your account</h2>
-            <a href="http://localhost:5173/verify/${token}">
-            Verify Email
-            </a>
-            `
+            html:`<h2>Welcome to Runtime!</h2>
+                  <p>Thank you for creating an account.</p>
+                  <p>Please click the button below to verify your email address.</p>
+                  <a href="http://localhost:5173/verify/${token}">Verify Email</a>
+                  <p>If you did not create this account, you can safely ignore this email.</p>`
         });
-        console.log(info);
         }catch(err){
             console.log(err);
         }

@@ -5,6 +5,7 @@ import Problems from "./pages/Problems";
 import Register from "./pages/Register";
 import Verify from "./pages/Verify"
 import ProtectedRoute from "./compnents/ProtectedRoute";
+import ProblemDetail from "./pages/ProblemDetail";
 
 function App(){
     return (
@@ -12,11 +13,16 @@ function App(){
         <Route path="/login" element={<Login/>}/>
         <Route path="/register" element={<Register/>}/>
         <Route path="/verify/:token" element={<Verify />} />
-        <Route path="/Problems" element={
+        <Route path="/problems" element={
           <ProtectedRoute>
               <Problems/>
           </ProtectedRoute>
           }/>
+        <Route path="/problems/:id" element={
+          <ProtectedRoute>
+               <ProblemDetail/>
+          </ProtectedRoute>
+        }/>
       </Routes>
     )
 }
