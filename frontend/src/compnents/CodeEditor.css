@@ -1,0 +1,25 @@
+.editor-container{
+
+    margin-top: 10px;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 8px 25px rgba(87, 80, 159, 0.25);
+
+    background: white;
+
+    transition:
+        transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.editor-container:hover{
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 12px 35px rgba(0, 0, 0, 0.35);
+}

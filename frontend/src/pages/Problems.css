@@ -7,7 +7,9 @@ body{
 .problem-container{
     max-width: 900px;
     margin: 40px auto;
-    padding: 30px;
+    padding-bottom: 30px;
+    padding-left: 30px;
+    padding-right: 30px;
 }
 
 .problem-container h1{

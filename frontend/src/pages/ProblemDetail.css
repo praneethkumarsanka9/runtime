@@ -1,0 +1,96 @@
+body{
+    background-color: #edf7f8;
+}
+
+.problem-detail-container{
+    width: 80%;
+    margin: 40px auto;
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.problem-detail-container h1{
+    color: #8f87f1;
+}
+
+.problem-detail-container h2{
+    color: #555;
+    margin-top: 30px;
+}
+
+#logo-problemDetail{
+    width: 300px;
+    height: 60px;
+    object-fit: contain;
+    margin: 0 auto 20px auto;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+#logo-problemDetail:hover{
+    transform: scale(1.05);
+}
+.editor-actions{
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+/* Common button styles */
+
+.run-btn,
+.submit-btn{
+    padding: 12px 28px;
+    border: none;
+    border-radius: 12px;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+}
+
+/* Run Button */
+
+.run-btn{
+    background-color: white;
+    color: #8f87f1;
+
+    border: 2px solid #8f87f1;
+}
+
+.run-btn:hover{
+    background-color: #8f87f1;
+    color: white;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(143,135,241,0.25);
+}
+
+/* Submit Button */
+
+.submit-btn{
+    background-color: #8f87f1;
+    color: white;
+}
+
+.submit-btn:hover{
+    background-color: #7b72eb;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(143,135,241,0.35);
+}
+
+.run-btn:active,
+.submit-btn:active{
+    transform: translateY(0);
+}

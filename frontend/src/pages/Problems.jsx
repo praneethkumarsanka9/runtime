@@ -2,9 +2,12 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Problems.css";
+import logo from "../assets/logo.png";
+import "./Loader.css"
 function Problems(){
     const [problems,setProblems] = useState([]);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
 
     function logout(){
         localStorage.removeItem("token");
@@ -28,11 +31,35 @@ function Problems(){
             setProblems(res.data);
         }catch(err){
             console.log(err.response?.data);
+        }finally{
+            setTimeout(()=>{
+               setLoading(false); 
+            },3500);
         }
+    }
+    
+    if (loading) {
+    return (
+        <div className="loader-page">
+    <div className="runtime-loader">
+
+        <div className="ring-wrapper">
+            <div className="loader-ring"></div>
+        </div>
+
+        <div className="loader-logo">
+            <span>RUNTIME</span>
+        </div>
+
+    </div>
+</div>
+    );
     }
 
     return(
-        <div className="problem-container">
+        <div>
+            <img id="logo-problemDetail" src={logo} alt="Logo"/>
+            <div className="problem-container">
             <h1>
                 Problems
             </h1>
@@ -48,6 +75,7 @@ function Problems(){
             <button className="logout-btn" onClick={logout}>
                 Logout
             </button>
+        </div>
         </div>
     );
 }

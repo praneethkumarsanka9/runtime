@@ -1,0 +1,110 @@
+.loader-page{
+    width:100vw;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#edf7f8;
+}
+
+.runtime-loader{
+    position:relative;
+    width:120px;
+    height:120px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* Ring */
+
+.ring-wrapper{
+    position:absolute;
+    animation:ringDisappear 2.5s ease forwards;
+}
+
+.loader-ring{
+    width:100px;
+    height:100px;
+
+    border:7px solid rgba(143,135,241,0.15);
+    border-top:7px solid #8f87f1;
+    border-right:7px solid #b8b2ff;
+
+    border-radius:50%;
+
+    box-shadow:
+        0 0 20px rgba(143,135,241,0.25);
+
+    animation:ringRotate 1.2s linear infinite;
+}
+
+/* Runtime Logo */
+
+.loader-logo{
+    position:absolute;
+}
+
+.loader-logo span{
+
+    font-size:3.2rem;
+    font-weight:700;
+    color:#8f87f1;
+
+    letter-spacing:4px;
+
+    opacity:0;
+
+    text-shadow:
+        0 0 15px rgba(143,135,241,0.35);
+
+    animation:textAppear 1s ease forwards;
+    animation-delay:2s;
+}
+
+/* Animations */
+
+@keyframes ringRotate{
+
+    from{
+        transform:rotate(0deg);
+    }
+
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+@keyframes ringDisappear{
+
+    0%,70%{
+        opacity:1;
+        transform:scale(1);
+    }
+
+    100%{
+        opacity:0;
+        transform:scale(1.8);
+    }
+}
+
+@keyframes textAppear{
+
+    from{
+        opacity:0;
+        transform:
+            translateY(20px)
+            scale(.8);
+
+        letter-spacing:12px;
+    }
+
+    to{
+        opacity:1;
+        transform:
+            translateY(0)
+            scale(1);
+
+        letter-spacing:4px;
+    }
+}
