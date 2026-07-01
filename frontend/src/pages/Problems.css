@@ -24,6 +24,11 @@ body{
     border-radius: 15px;
     padding: 25px;
     margin-bottom: 20px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     transition: 0.3s;
 }
@@ -43,12 +48,29 @@ body{
 
 .problem-card p{
     display: inline-block;
-    background-color: #a99aff;
+    background-color:  #8f87f1;
+    text-align: center;
     border: 1px solid white;
     color: #efefef;
     padding: 3px 15px;
     border-radius: 20px;
     font-weight: bold;
+}
+
+.problem-info{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+
+.problem-info h2{
+    margin: 0;
+}
+
+.problem-info p{
+    margin: 0;
 }
 
 .logout-btn{
@@ -68,4 +90,56 @@ body{
     background-color: white;
     color: black;
     border: 1px black solid;
+}
+
+/* Pending Button */
+
+.pending-btn{
+
+
+    padding: 10px 20px;
+
+    border: 2px solid #8f87f1;
+    border-radius: 12px;
+
+    background: white;
+    color: #8f87f1;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all .3s ease;
+}
+
+.pending-btn:hover{
+
+    background: #8f87f1;
+    color: white;
+
+}
+
+/* Completed Button */
+
+.done-btn{
+
+
+    padding: 10px 20px;
+
+    border: 1px solid white;
+    border-radius: 12px;
+
+    background: #8f87f1;
+    color: white;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: default;
+
+    box-shadow:
+        0 0 12px rgba(143,135,241,.35);
+
+    transition: all .3s ease;
 }

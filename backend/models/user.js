@@ -8,7 +8,10 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    verificationToken: String
+    verificationToken: String,
+    completed: [{
+    problemId: String
+    }]
 });
 
 module.exports = mongoose.model("User",userSchema);

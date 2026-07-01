@@ -8,12 +8,36 @@ function Problems(){
     const [problems,setProblems] = useState([]);
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
+    const [complete, setComplete] = useState([]);
 
     function logout(){
         localStorage.removeItem("token");
         navigate("/login");
     }
     
+    async function markDone(id){
+        try{
+            console.log("clicked!!");
+            const token = localStorage.getItem("token");
+            await axios.post("http://localhost:3000/complete",
+                {id},
+                {
+                    headers:{
+                        Authorization: token
+                    }
+                }
+            )
+            setComplete(prev => {
+                if(prev.includes(id)){
+                    return prev;
+                }
+                return [...prev, id];
+            });
+        }catch(err){
+            console.log(err.response?.data);
+        }
+    }
+
     useEffect(()=>{
         fetchProblems();
     },[]);
@@ -28,7 +52,8 @@ function Problems(){
                     }
                 }
             );
-            setProblems(res.data);
+            setProblems(res.data.problems);
+            setComplete(res.data.completed);
         }catch(err){
             console.log(err.response?.data);
         }finally{
@@ -65,10 +90,23 @@ function Problems(){
             </h1>
             {
                 problems.map((problem) => (
-                    <div key={problem._id} className="problem-card"
-                    onClick={() => navigate(`/problems/${problem._id}`)}>
-                        <h2>{problem.title}</h2>
-                        <p>{problem.difficulty}</p>
+                    <div key={problem._id} className="problem-card" onClick={() => navigate(`/problems/${problem._id}`)}>
+                        <div className="problem-info">
+                            <h2>{problem.title}</h2>
+                            <p>{problem.difficulty}</p>
+                        </div>
+
+                        <button
+                            className={complete.includes(problem._id) ? "done-btn" : "pending-btn"}
+                            onClick={(e)=>{
+                                e.stopPropagation();
+                                markDone(problem._id);
+                            }}
+                        >
+                        {complete.includes(problem._id)
+                            ? "Completed"
+                            : "Mark Done"}
+                        </button>
                     </div>
                 ))
             }

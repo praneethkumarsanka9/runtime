@@ -70,8 +70,10 @@ const problems = [
 
 app.get("/problems",auth,async(req,res)=>{
     try{
+        const user = await User.findById(req.user.id);
+        const completed = user.completed.map(item => item.problemId);
         const problems = await Problem.find();
-        res.json(problems);
+        res.json({problems,completed});
     }catch(err){
         res.status(500).json({
             message: "Failed to fetch problems"
@@ -297,22 +299,85 @@ app.post("/login",async(req,res)=>{
     }
 });
 
+app.post("/run",auth,async(req,res)=>{
+    const code = req.body.code;
+    const input = req.body.input;
+    fs.writeFileSync("temp.cpp",code);
+    fs.writeFileSync("./testcases/input.txt",input);
+    try{
+        const {stdout} = await execPromise(`docker run --rm --memory=256m --cpus=0.5 -v ${process.cwd()}:/app cpp-runner:latest bash -c "cd /app && g++ temp.cpp -o run && timeout 2s ./run < ./testcases/input.txt"`);
+        res.json({
+            output: stdout
+        });
+    }catch(err){
+        res.json({
+            output: err.stderr || err.message
+        });
+    }
+});
+
+app.post("/complete",auth,async(req,res)=>{
+    try{
+    const { id } = req.body;
+    const user = await User.findById(req.user.id);
+    const exists = user.completed.some(
+        p => p.problemId === id
+    );
+    if(!exists){
+        user.completed.push({
+            problemId: id
+        });
+    }
+    await user.save();
+    res.json({
+        message: "marked as completed"
+    })
+    }catch(err){
+        console.log(err);
+        res.status(500).json({
+            message: "Server error"
+        });
+    }
+});
+
 app.post("/submit",auth,async(req,res)=>{
-    const submission = await Submission.create({
+    try{
+        const submission = await Submission.create({
             user:req.user.id,
             problem:req.body.problemId,
-            code: req.body.code,
-            language: req.body.language
+            code: req.body.code
     });
     const problem = await Problem.findById(submission.problem);
+    if(!problem){
+        res.status(404).json({
+            message: "Problem not found"
+        });
+    }
     const result = await judgeSubmission(submission.code,problem.testcases);
-    submission.verdict = result.verdict;       
+    submission.verdict = result.verdict;
+    if(submission.verdict === "Accepted"){
+    const id = problem._id;
+    const user = await User.findById(req.user.id);
+    const exists = user.completed.some(
+        p => p.problemId === id
+    );
+    if(!exists){
+        user.completed.push({
+            problemId: id
+        });
+    }
+    await user.save();
+    }       
     await submission.save();
     res.status(200).json({
             submissionId : submission._id,
             ...result
     });
-    
+    }catch(err){
+        res.status(500).json({
+            message: "Server error"
+        });
+    }
 });
 
 app.listen(process.env.PORT,()=>{
