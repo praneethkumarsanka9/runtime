@@ -9,6 +9,9 @@ function Problems(){
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [complete, setComplete] = useState([]);
+    const solved = complete.length;
+    const total = problems.length;
+    const percent = total === 0? 0 : (solved/total)*100;
 
     function logout(){
         localStorage.removeItem("token");
@@ -80,11 +83,21 @@ function Problems(){
 </div>
     );
     }
-
+    console.log(complete);
     return(
         <div>
             <img id="logo-problemDetail" src={logo} alt="Logo"/>
             <div className="problem-container">
+            <div className="progress-container">
+                <h3>Your Progress</h3>
+                <div className="progress-bar">
+                    <div 
+                        className="progress-fill"
+                        style={{width: `${percent}%`}}
+                    ></div>
+                </div>
+                <p>{complete.length} / {problems.length} Problems solved</p>
+            </div>
             <h1>
                 Problems
             </h1>

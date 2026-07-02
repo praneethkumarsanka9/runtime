@@ -110,7 +110,10 @@ function ProblemDetail(){
 
     return(
         <div>
-            <img id="logo-problemDetail" src={logo} alt="Logo" onClick={()=>navigate("/problems")}/>
+            <div className="problem-header">
+                <img id="logo-problemDetail" src={logo} alt="Logo" onClick={()=>navigate("/problems")}/>
+                <button id="back-problemDetail" onClick={()=>navigate("/problems")}>Back</button>
+            </div>
             <div className="problem-detail-container">
             <h1>{problem.title}</h1>
             <h3>Difficulty: {problem.difficulty}</h3>

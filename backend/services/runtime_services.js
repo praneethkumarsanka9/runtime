@@ -1,14 +1,19 @@
 const fs = require("fs");
 const util = require("util");
 const { exec } = require("child_process");
+const crypto = require("crypto");
+const path = require("path");
 
 const execPromise = util.promisify(exec);
 
 async function judgeSubmission(code , testcases){
-    
-        fs.writeFileSync("temp.cpp",code);
+        const folder = crypto.randomUUID();
+        const folderPath = path.join(process.cwd(), "temp", folder);
+        fs.mkdirSync(folderPath, { recursive: true });
         try{
-            await execPromise(`docker run --rm -v ${process.cwd()}:/app cpp-runner:latest bash -c "cd /app && g++ temp.cpp -o run"`);
+        fs.writeFileSync(path.join(folderPath, "temp.cpp"), code);
+        try{
+            await execPromise(`docker run --rm -v "${folderPath}:/app" cpp-runner:latest bash -c "cd /app && g++ temp.cpp -o run"`);
         }catch(err){
             console.log(err);
             return {
@@ -18,10 +23,10 @@ async function judgeSubmission(code , testcases){
         }
         let c = 1;
         for(const testcase of testcases){
-            fs.writeFileSync("./testcases/input.txt",testcase.input);
+            fs.writeFileSync(path.join(folderPath, "input.txt"),testcase.input);
             let stdout;
             try{
-                const {stdout} = await execPromise(`docker run --rm --memory=256m --cpus=0.5 -v ${process.cwd()}:/app cpp-runner:latest bash -c "cd /app && timeout 2s ./run < ./testcases/input.txt"`);
+                let {stdout} = await execPromise(`docker run --rm --memory=256m --cpus=0.5 -v "${folderPath}:/app" cpp-runner:latest bash -c "cd /app && timeout 2s ./run < input.txt"`);
                 if( stdout.trim() !== testcase.output.trim() ){
                     return{
                         verdict: "Wrong answer",
@@ -44,6 +49,12 @@ async function judgeSubmission(code , testcases){
         return {
             verdict: "Accepted"
         };
+        }finally{
+            fs.rmSync(folderPath, {
+                recursive: true,
+                force: true
+            });
+        }
 }
 
 module.exports = judgeSubmission;

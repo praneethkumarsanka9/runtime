@@ -17,7 +17,7 @@ const judgeSubmission = require("./services/runtime_services");
 const cors = require("cors");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
-
+const path = require("path");
 
 const app = express();
 
@@ -116,10 +116,9 @@ app.get("/me",auth,async (req,res)=>{
     res.json(user);
 });
 
-app.get("/submissons",auth,async(req,res)=>{
+app.get("/submissions",auth,async(req,res)=>{
     const submission = await Submission.find({
-        user: req.user.id,
-        problem: req.body.problemId
+        user: req.user.id
     })
     .populate("problem","title")
     .populate("user","username");
@@ -300,18 +299,26 @@ app.post("/login",async(req,res)=>{
 });
 
 app.post("/run",auth,async(req,res)=>{
+    const folder = crypto.randomUUID();
+    const folderPath = path.join(process.cwd(),"temp",folder);
+    fs.mkdirSync(folderPath, {recursive: true});
     const code = req.body.code;
     const input = req.body.input;
-    fs.writeFileSync("temp.cpp",code);
-    fs.writeFileSync("./testcases/input.txt",input);
+    fs.writeFileSync(path.join(folderPath, "temp.cpp"),code);
+    fs.writeFileSync(path.join(folderPath, "input.txt"),input);
     try{
-        const {stdout} = await execPromise(`docker run --rm --memory=256m --cpus=0.5 -v ${process.cwd()}:/app cpp-runner:latest bash -c "cd /app && g++ temp.cpp -o run && timeout 2s ./run < ./testcases/input.txt"`);
+        const {stdout} = await execPromise(`docker run --rm --memory=256m --cpus=0.5 -v "${folderPath}:/app" cpp-runner:latest bash -c "cd /app && g++ temp.cpp -o run && timeout 2s ./run < input.txt"`);
         res.json({
             output: stdout
-        });
+        }); 
     }catch(err){
         res.json({
             output: err.stderr || err.message
+        });
+    }finally{
+        fs.rmSync(folderPath, {
+            recursive: true,
+            force: true
         });
     }
 });
@@ -356,10 +363,10 @@ app.post("/submit",auth,async(req,res)=>{
     const result = await judgeSubmission(submission.code,problem.testcases);
     submission.verdict = result.verdict;
     if(submission.verdict === "Accepted"){
-    const id = problem._id;
+    const id = problem._id.toString();
     const user = await User.findById(req.user.id);
     const exists = user.completed.some(
-        p => p.problemId === id
+        p => p.problemId.toString() === id
     );
     if(!exists){
         user.completed.push({

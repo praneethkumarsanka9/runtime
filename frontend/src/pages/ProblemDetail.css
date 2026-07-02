@@ -20,14 +20,48 @@ body{
     margin-top: 30px;
 }
 
+.problem-header{
+    width: 100%;
+    margin: 30px auto 20px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 #logo-problemDetail{
     width: 300px;
     height: 60px;
     object-fit: contain;
-    margin: 0 auto 20px auto;
     border-radius: 25px;
     cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: transform .3s ease;
+}
+
+#back-problemDetail{
+
+    margin-right: 3rem;
+    padding: 12px 28px;
+
+    border: 2px solid #8f87f1;
+    border-radius: 12px;
+
+    background: white;
+    color: #8f87f1;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all .3s ease;
+}
+
+#back-problemDetail:hover{
+
+    background: #8f87f1;
+    color: white;
+
 }
 
 
