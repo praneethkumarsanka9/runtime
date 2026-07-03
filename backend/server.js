@@ -18,6 +18,7 @@ const cors = require("cors");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const path = require("path");
+const admin = require("./middleware/admin");
 
 const app = express();
 
@@ -131,7 +132,7 @@ app.get("/submissions",auth,async(req,res)=>{
     }
 });
 
-app.post("/problems",auth,async(req,res)=>{
+app.post("/problems",auth,admin,async(req,res)=>{
     try{
         const problem = await Problem.create({
             title: req.body.title,
@@ -148,7 +149,7 @@ app.post("/problems",auth,async(req,res)=>{
     }
 });
 
-app.put("/problems/:id",auth,async(req,res)=>{
+app.put("/problems/:id",auth,admin,async(req,res)=>{
     const problem = await Problem.findById(req.params.id);
     if(problem.createdBy.toString() != req.user.id){
         return res.status(403).json({
@@ -167,13 +168,8 @@ app.put("/problems/:id",auth,async(req,res)=>{
     }
 });
 
-app.delete("/problems/:id",auth,async(req,res)=>{
+app.delete("/problems/:id",auth,admin,async(req,res)=>{
     const problem = await Problem.findById(req.params.id);
-    if(problem.createdBy.toString() != req.user.id){
-        return res.status(403).json({
-            message: "Not authorized"
-        });
-    }
     try{
         await Problem.findByIdAndDelete(req.params.id);
         await Submission.deleteMany({

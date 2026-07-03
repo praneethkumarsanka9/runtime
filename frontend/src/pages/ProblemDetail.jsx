@@ -15,12 +15,11 @@ function ProblemDetail(){
     const [output,setOutput] = useState("Click run to execute your code");
     const [code, setCode] = useState(
         `#include <bits/stdc++.h>
-        using namespace std;
+using namespace std;
+int main(){
 
-        int main(){
-
-        return 0;
-        }`
+    return 0;
+}`
     );
     const navigate = useNavigate();
 

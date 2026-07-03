@@ -50,6 +50,13 @@ function CodeEditor({ code, setCode }) {
                 beforeMount={handleEditorWillMount}
                 theme="runtime-theme"
                 onChange={(value) => setCode(value || "")}
+                options={{
+                    tabSize: 4,
+                    insertSpaces: true,
+                    detectIndentation: false,
+                    formatOnPaste: true,
+                    formatOnType: true
+                }}
             />
         </div>
     );
