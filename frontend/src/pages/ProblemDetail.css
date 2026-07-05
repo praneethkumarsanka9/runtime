@@ -64,7 +64,10 @@ body{
 
 }
 
-
+.description {
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
 
 .editor-actions{
     display: flex;

@@ -74,7 +74,7 @@ app.get("/problems",auth,async(req,res)=>{
         const user = await User.findById(req.user.id);
         const completed = user.completed.map(item => item.problemId);
         const problems = await Problem.find();
-        res.json({problems,completed});
+        res.json({problems,completed,role: user.role});
     }catch(err){
         res.status(500).json({
             message: "Failed to fetch problems"
@@ -226,7 +226,7 @@ app.post("/register",async (req,res)=>{
         });
         await user.save();
         res.status(201).json({
-            message: "Email sent for verification",
+            message: "Email sent for verification (Check spam section)",
             user
         });
         try{

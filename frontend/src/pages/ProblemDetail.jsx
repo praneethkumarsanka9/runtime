@@ -117,7 +117,7 @@ int main(){
             <h1>{problem.title}</h1>
             <h3>Difficulty: {problem.difficulty}</h3>
             <h2>Description</h2>
-            <p>{problem.description}</p>
+            <p className="description">{problem.description}</p>
             <h2>Solve Here</h2>
             <CodeEditor code={code} setCode = {setCode}/>
             <h3 className="section-title">Input:</h3>

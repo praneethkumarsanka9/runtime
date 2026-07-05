@@ -1,0 +1,99 @@
+body{
+    background: #edf7f8;
+}
+
+.add-problem-container{
+
+    width: 70%;
+    max-width: 850px;
+
+    margin: 40px auto;
+
+    background: white;
+
+    padding: 35px;
+
+    border-radius: 15px;
+
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+
+.add-problem-container h1{
+
+    text-align: center;
+
+    color: #8f87f1;
+
+    margin-bottom: 30px;
+}
+
+.add-problem-container input,
+.add-problem-container select,
+.add-problem-container textarea{
+
+    width: 100%;
+
+    margin-bottom: 20px;
+
+    padding: 14px;
+
+    font-size: 15px;
+
+    border: 2px solid #dcd6ff;
+
+    border-radius: 12px;
+
+    outline: none;
+
+    box-sizing: border-box;
+
+    transition: .3s;
+}
+
+.add-problem-container input:focus,
+.add-problem-container select:focus,
+.add-problem-container textarea:focus{
+
+    border-color: #8f87f1;
+
+    box-shadow: 0 0 0 4px rgba(143,135,241,.15);
+}
+
+.add-problem-container textarea{
+
+    resize: vertical;
+
+    font-family: Consolas, monospace;
+}
+
+.add-problem-container button{
+
+    display: block;
+
+    margin-left: auto;
+
+    padding: 12px 30px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: #8f87f1;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: .3s;
+}
+
+.add-problem-container button:hover{
+
+    background: #7b72eb;
+
+    box-shadow: 0 8px 20px rgba(143,135,241,.3);
+}

@@ -12,6 +12,7 @@ function Problems(){
     const solved = complete.length;
     const total = problems.length;
     const percent = total === 0? 0 : (solved/total)*100;
+    const [role,setRole] = useState("");
 
     function logout(){
         localStorage.removeItem("token");
@@ -20,7 +21,6 @@ function Problems(){
     
     async function markDone(id){
         try{
-            console.log("clicked!!");
             const token = localStorage.getItem("token");
             await axios.post("http://localhost:3000/complete",
                 {id},
@@ -57,6 +57,7 @@ function Problems(){
             );
             setProblems(res.data.problems);
             setComplete(res.data.completed);
+            setRole(res.data.role);
         }catch(err){
             console.log(err.response?.data);
         }finally{
@@ -83,7 +84,6 @@ function Problems(){
 </div>
     );
     }
-    console.log(complete);
     return(
         <div>
             <img id="logo-problemDetail" src={logo} alt="Logo"/>
@@ -123,9 +123,19 @@ function Problems(){
                     </div>
                 ))
             }
+            <div className="bottom-buttons">
+            {role === "admin" &&(
+                <button
+                    className="add-problem-btn"
+                    onClick={() => navigate("/add-problem")}
+                >
+                    Add Problem
+                </button>
+            )}
             <button className="logout-btn" onClick={logout}>
                 Logout
             </button>
+            </div>
         </div>
         </div>
     );
