@@ -170,11 +170,22 @@ app.put("/problems/:id",auth,admin,async(req,res)=>{
 
 app.delete("/problems/:id",auth,admin,async(req,res)=>{
     const problem = await Problem.findById(req.params.id);
+    const user = await User.findById(req.user.id);
     try{
         await Problem.findByIdAndDelete(req.params.id);
         await Submission.deleteMany({
             problem: req.params.id
         });
+        await User.updateMany(
+            {},
+            {
+                $pull: {
+                    completed:{
+                        problemId: req.params.id
+                    }
+                }
+            }
+        );
         res.json({
             message:"Problem deleted"
         });

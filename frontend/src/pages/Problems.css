@@ -215,3 +215,11 @@ body{
 
     font-weight: 600;
 }
+
+#edit-btn{
+    margin-right: 1rem;
+}
+
+#delete-btn{
+    margin-right: 1rem;
+}

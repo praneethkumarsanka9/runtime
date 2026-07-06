@@ -7,6 +7,7 @@ import Verify from "./pages/Verify"
 import ProtectedRoute from "./compnents/ProtectedRoute";
 import ProblemDetail from "./pages/ProblemDetail";
 import AddProblem from "./pages/AddProblem";
+import EditProblem from "./pages/EditProblem";
 
 function App(){
     return (
@@ -27,6 +28,11 @@ function App(){
         <Route path="/add-problem" element={
           <ProtectedRoute>
                <AddProblem/>
+          </ProtectedRoute>
+        }/>
+        <Route path="/edit-problem/:id" element={
+          <ProtectedRoute>
+               <EditProblem/>
           </ProtectedRoute>
         }/>
       </Routes>

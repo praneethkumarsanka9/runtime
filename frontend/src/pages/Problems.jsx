@@ -18,7 +18,7 @@ function Problems(){
         localStorage.removeItem("token");
         navigate("/login");
     }
-    
+
     async function markDone(id){
         try{
             const token = localStorage.getItem("token");
@@ -66,6 +66,21 @@ function Problems(){
             },3500);
         }
     }
+
+    async function deleteProblem(id){
+        try{
+            const token = localStorage.getItem("token");
+            await axios.delete(`http://localhost:3000/problems/${id}`,{
+                headers:{
+                    Authorization: token
+                }
+            });
+            setProblems(prev => prev.filter(p => p._id !== id));
+            setComplete(prev => prev.filter(pid => pid !== id));
+        }catch(err){
+            console.log(err.response?.data);
+        }
+    }
     
     if (loading) {
     return (
@@ -108,7 +123,23 @@ function Problems(){
                             <h2>{problem.title}</h2>
                             <p>{problem.difficulty}</p>
                         </div>
-
+                        <div>
+                        {role === "admin" &&(
+                            <button className="pending-btn" id="edit-btn" onClick={(e)=>{
+                                e.stopPropagation();
+                                navigate(`/edit-problem/${problem._id}`)
+                            }}>
+                                Edit
+                            </button>
+                        )}
+                        {role === "admin" &&(
+                            <button className="pending-btn" id="delete-btn" onClick={(e)=>{
+                                e.stopPropagation();
+                                deleteProblem(problem._id);
+                            }}>
+                                Delete
+                            </button>
+                        )}
                         <button
                             className={complete.includes(problem._id) ? "done-btn" : "pending-btn"}
                             onClick={(e)=>{
@@ -120,6 +151,8 @@ function Problems(){
                             ? "Completed"
                             : "Mark Done"}
                         </button>
+                        </div>
+
                     </div>
                 ))
             }
