@@ -391,6 +391,11 @@ app.post("/submit",auth,async(req,res)=>{
         res.status(500).json({
             message: "Server error"
         });
+    }finally{
+        fs.rmSync(folderPath, {
+            recursive: true,
+            force: true
+        });
     }
 });
 
