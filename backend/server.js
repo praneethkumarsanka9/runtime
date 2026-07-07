@@ -58,7 +58,7 @@ const loginLimiter = rateLimit({
 });
 
 const registerLimiter = rateLimit({
-    windowMs = 60 * 1000,
+    windowMs: 60 * 1000,
     max: 3,
     message: {
         message: "Too many register requests"
@@ -66,7 +66,7 @@ const registerLimiter = rateLimit({
 });
 
 const runLimiter = rateLimit({
-    windowMs = 60 * 1000,
+    windowMs: 60 * 1000,
     max: 20,
     message: {
         message: "Too many run requests"
@@ -74,7 +74,7 @@ const runLimiter = rateLimit({
 });
 
 const submitLimiter = rateLimit({
-    windowMs = 60 * 1000,
+    windowMs: 60 * 1000,
     max: 20,
     message: {
         message: "Too many submit requests"
