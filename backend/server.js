@@ -19,10 +19,11 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const path = require("path");
 const admin = require("./middleware/admin");
+const rateLimit = require("express-rate-limit");
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json({limit: "200kb"}));
 app.use(cors());
 
 const transporter = nodemailer.createTransport({
@@ -46,6 +47,38 @@ mongoose.connect(process.env.MONGO_URL)
 })
 .catch((err)=>{
     console.log(err);
+});
+
+const loginLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 5,
+    message: {
+        message: "Too many login requests. Please try again later."
+    }
+});
+
+const registerLimiter = rateLimit({
+    windowMs = 60 * 1000,
+    max: 3,
+    message: {
+        message: "Too many register requests"
+    }
+});
+
+const runLimiter = rateLimit({
+    windowMs = 60 * 1000,
+    max: 20,
+    message: {
+        message: "Too many run requests"
+    }
+});
+
+const submitLimiter = rateLimit({
+    windowMs = 60 * 1000,
+    max: 20,
+    message: {
+        message: "Too many submit requests"
+    }
 });
 
 app.get("/",(req,res)=>{
@@ -217,7 +250,7 @@ app.get("/verify/:token", async(req,res) =>{
     });
 });
 
-app.post("/register",async (req,res)=>{
+app.post("/register",registerLimiter,async (req,res)=>{
     try{
         
         const token = crypto.randomBytes(32).toString("hex");
@@ -261,7 +294,7 @@ app.post("/register",async (req,res)=>{
     }
 });
 
-app.post("/login",async(req,res)=>{
+app.post("/login",loginLimiter,async(req,res)=>{
     try{
         const {email,password} = req.body;
         const user = await User.findOne({email});
@@ -305,7 +338,7 @@ app.post("/login",async(req,res)=>{
     }
 });
 
-app.post("/run",auth,async(req,res)=>{
+app.post("/run",auth,runLimiter,async(req,res)=>{
     const folder = crypto.randomUUID();
     const folderPath = path.join(process.cwd(),"temp",folder);
     fs.mkdirSync(folderPath, {recursive: true});
@@ -354,7 +387,7 @@ app.post("/complete",auth,async(req,res)=>{
     }
 });
 
-app.post("/submit",auth,async(req,res)=>{
+app.post("/submit",submitLimiter,auth,async(req,res)=>{
     try{
         const submission = await Submission.create({
             user:req.user.id,
@@ -388,13 +421,9 @@ app.post("/submit",auth,async(req,res)=>{
             ...result
     });
     }catch(err){
+        console.log(err);
         res.status(500).json({
             message: "Server error"
-        });
-    }finally{
-        fs.rmSync(folderPath, {
-            recursive: true,
-            force: true
         });
     }
 });

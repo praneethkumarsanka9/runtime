@@ -49,6 +49,8 @@ async function judgeSubmission(code , testcases){
         return {
             verdict: "Accepted"
         };
+        }catch(err){
+            
         }finally{
             fs.rmSync(folderPath, {
                 recursive: true,
