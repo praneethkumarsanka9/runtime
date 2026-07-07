@@ -10,11 +10,12 @@ function Login(){
     const [password,setPassword] = useState("");
     const[message,setMessage] = useState("");
     const navigate = useNavigate();
+    const API_URL = "http://15.206.166.192";
 
     async function handle(e){
       e.preventDefault();
       try{
-         const res = await axios.post("http://localhost:3000/login",{email,password});
+         const res = await axios.post(`${API_URL}/login`,{email,password});
          localStorage.setItem("token",res.data.token);
          navigate("/problems",{replace: true});
       }catch(err){

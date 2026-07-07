@@ -8,6 +8,7 @@ function Verify(){
     const { token } = useParams();
     const [message , setMessage] = useState("Verifying...");
     const called = useRef(false);
+    const API_URL = "http://15.206.166.192";
 
     useEffect(()=>{
         if (called.current) return;
@@ -19,7 +20,7 @@ function Verify(){
     async function verifyUser(){
         try{
             const res = await axios.get(
-                `http://localhost:3000/verify/${token}`
+                `${API_URL}/verify/${token}`
             );
             setMessage(res.data.message);
         }catch(err){

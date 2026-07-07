@@ -12,10 +12,11 @@ function Register(){
     const [password,setPassword] = useState("");
     const [message, setMessage] = useState("");
     const navigate = useNavigate();
+    const API_URL = "http://15.206.166.192";
     async function handle(e){
         e.preventDefault();
         try{
-            const result = await axios.post("http://localhost:3000/register",{username,email,password});
+            const result = await axios.post(`${API_URL}/register`,{username,email,password});
             setUsername("");
             setEmail("");
             setPassword("");

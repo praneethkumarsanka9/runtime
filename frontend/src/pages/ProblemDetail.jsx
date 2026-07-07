@@ -22,6 +22,7 @@ int main(){
 }`
     );
     const navigate = useNavigate();
+    const API_URL = "http://15.206.166.192";
 
     useEffect(() => {
         fetchProblem();
@@ -31,7 +32,7 @@ int main(){
         try{
             setOutput("Running...")
             const token = localStorage.getItem("token");
-            const res = await axios.post("http://localhost:3000/run",{
+            const res = await axios.post(`${API_URL}/run`,{
                 code,input
             },{
                 headers:{
@@ -51,7 +52,7 @@ int main(){
         const problemId = id;
         try{
             const token = localStorage.getItem("token");
-            const res = await axios.post("http://localhost:3000/submit",{
+            const res = await axios.post(`${API_URL}/submit`,{
                 problemId,code
             },{
                 headers:{
@@ -71,7 +72,7 @@ int main(){
             const token = localStorage.getItem("token");
 
             const res = await axios.get(
-                `http://localhost:3000/problems/${id}`,{
+                `${API_URL}/problems/${id}`,{
                     headers:{
                         Authorization: token
                     }

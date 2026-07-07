@@ -13,6 +13,7 @@ function Problems(){
     const total = problems.length;
     const percent = total === 0? 0 : (solved/total)*100;
     const [role,setRole] = useState("");
+    const API_URL = "http://15.206.166.192";
 
     function logout(){
         localStorage.removeItem("token");
@@ -22,7 +23,7 @@ function Problems(){
     async function markDone(id){
         try{
             const token = localStorage.getItem("token");
-            await axios.post("http://localhost:3000/complete",
+            await axios.post(`${API_URL}/complete`,
                 {id},
                 {
                     headers:{
@@ -49,7 +50,7 @@ function Problems(){
         try{
             const token = localStorage.getItem("token");
             const res = await axios.get(
-                "http://localhost:3000/problems",{
+                `${API_URL}/problems`,{
                     headers:{
                         Authorization: `${token}`
                     }
@@ -70,7 +71,7 @@ function Problems(){
     async function deleteProblem(id){
         try{
             const token = localStorage.getItem("token");
-            await axios.delete(`http://localhost:3000/problems/${id}`,{
+            await axios.delete(`${API_URL}/problems/${id}`,{
                 headers:{
                     Authorization: token
                 }

@@ -10,12 +10,13 @@ function AddProblem(){
     const [difficulty,setDifficulty] = useState("Easy");
     const [description, setDescription] = useState("");
     const [testcases, setTestcases] = useState("");
+    const API_URL = "http://15.206.166.192";
 
     async function addProblem(){
         try{
             const token = localStorage.getItem("token");
             await axios.post(
-                "http://localhost:3000/problems",
+                `${API_URL}/problems`,
                 {
                     title,
                     difficulty,

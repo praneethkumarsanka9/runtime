@@ -11,11 +11,12 @@ function EditProblem(){
     const [difficulty,setDifficulty] = useState("");
     const [description, setDescription] = useState("");
     const [testcases, setTestcases] = useState("");
+    const API_URL = "http://15.206.166.192";
     async function getProblem(){
         try{
             const token = localStorage.getItem("token");
             const res = await axios.get(
-                `http://localhost:3000/problems/${id}`,{
+                `${API_URL}/problems/${id}`,{
                     headers:{
                         Authorization: token
                     }
@@ -33,7 +34,7 @@ function EditProblem(){
         try{
             const token = localStorage.getItem("token");
             await axios.put(
-                `http://localhost:3000/problems/${id}`,
+                `${API_URL}/problems/${id}`,
                 {
                     title,
                     difficulty,
