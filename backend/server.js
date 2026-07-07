@@ -281,7 +281,7 @@ app.post("/register",registerLimiter,async (req,res)=>{
             html:`<h2>Welcome to Runtime!</h2>
                   <p>Thank you for creating an account.</p>
                   <p>Please click the button below to verify your email address.</p>
-                  <a href="http://localhost:5173/verify/${token}">Verify Email</a>
+                  <a href="http://15.206.166.192/verify/${token}">Verify Email</a>
                   <p>If you did not create this account, you can safely ignore this email.</p>`
         });
         }catch(err){
