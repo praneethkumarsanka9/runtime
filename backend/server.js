@@ -347,7 +347,7 @@ app.post("/run",auth,runLimiter,async(req,res)=>{
     fs.writeFileSync(path.join(folderPath, "temp.cpp"),code);
     fs.writeFileSync(path.join(folderPath, "input.txt"),input);
     try{
-        const {stdout} = await execPromise(`docker run --rm --memory=256m --cpus=0.5 -v "${folderPath}:/app" cpp-runner:latest bash -c "cd /app && g++ temp.cpp -o run && timeout 2s ./run < input.txt"`);
+        const {stdout} = await execPromise(`docker run --rm --memory=512m --cpus=0.5 -v "${folderPath}:/app" cpp-runner:latest bash -c "cd /app && g++ temp.cpp -o run && timeout 2s ./run < input.txt"`);
         res.json({
             output: stdout
         }); 

@@ -26,7 +26,7 @@ async function judgeSubmission(code , testcases){
             fs.writeFileSync(path.join(folderPath, "input.txt"),testcase.input);
             let stdout;
             try{
-                let {stdout} = await execPromise(`docker run --rm --memory=256m --cpus=0.5 -v "${folderPath}:/app" cpp-runner:latest bash -c "cd /app && timeout 2s ./run < input.txt"`);
+                let {stdout} = await execPromise(`docker run --rm --memory=512m --cpus=0.5 -v "${folderPath}:/app" cpp-runner:latest bash -c "cd /app && timeout 2s ./run < input.txt"`);
                 if( stdout.trim() !== testcase.output.trim() ){
                     return{
                         verdict: "Wrong answer",
