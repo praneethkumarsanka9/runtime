@@ -12,7 +12,7 @@ import EditProblem from "./pages/EditProblem";
 function App(){
     return (
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<Navigate to="/problems" replace />} />
         <Route path="/login" element={<Login/>}/>
         <Route path="/register" element={<Register/>}/>
         <Route path="/verify/:token" element={<Verify />} />
