@@ -22,7 +22,7 @@ int main(){
 }`
     );
     const navigate = useNavigate();
-    const API_URL = "http://15.206.166.192";
+    const API_URL = "http://15.206.166.192/api";
 
     useEffect(() => {
         fetchProblem();

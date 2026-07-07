@@ -13,7 +13,7 @@ function Problems(){
     const total = problems.length;
     const percent = total === 0? 0 : (solved/total)*100;
     const [role,setRole] = useState("");
-    const API_URL = "http://15.206.166.192";
+    const API_URL = "http://15.206.166.192/api";
 
     function logout(){
         localStorage.removeItem("token");

@@ -11,7 +11,7 @@ function EditProblem(){
     const [difficulty,setDifficulty] = useState("");
     const [description, setDescription] = useState("");
     const [testcases, setTestcases] = useState("");
-    const API_URL = "http://15.206.166.192";
+    const API_URL = "http://15.206.166.192/api";
     async function getProblem(){
         try{
             const token = localStorage.getItem("token");

@@ -12,7 +12,7 @@ function Register(){
     const [password,setPassword] = useState("");
     const [message, setMessage] = useState("");
     const navigate = useNavigate();
-    const API_URL = "http://15.206.166.192";
+    const API_URL = "http://15.206.166.192/api";
     async function handle(e){
         e.preventDefault();
         try{

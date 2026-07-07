@@ -8,7 +8,7 @@ function Verify(){
     const { token } = useParams();
     const [message , setMessage] = useState("Verifying...");
     const called = useRef(false);
-    const API_URL = "http://15.206.166.192";
+    const API_URL = "http://15.206.166.192/api";
 
     useEffect(()=>{
         if (called.current) return;
