@@ -352,7 +352,7 @@ app.post("/run",auth,runLimiter,async(req,res)=>{
             output: stdout
         }); 
     }catch(err){
-        if(err.code == 124 || err.code === "ERR_CHILD_PROCESS_STUDIO_MAXBUFFER"){
+        if(err.code == 124 || err.code === "ERR_CHILD_PROCESS_STDIO_MAXBUFFER"){
                 return{
                     verdict: "Time Limit Exceeded"
                 };
