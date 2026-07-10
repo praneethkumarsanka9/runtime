@@ -34,7 +34,7 @@ async function judgeSubmission(code , testcases){
                     };
                 }
             }catch(err){
-                if(err.code == 124){
+                if(err.code == 124 || err.code === "ERR_CHILD_PROCESS_STUDIO_MAXBUFFER"){
                     return{
                         verdict: "Time Limit Exceeded"
                     };
