@@ -13,20 +13,29 @@ function ProblemDetail(){
     const [loading, setLoading] = useState(true);
     const [input,setInput] = useState("");
     const [output,setOutput] = useState("Click run to execute your code");
-    const [code, setCode] = useState(
-        `#include <bits/stdc++.h>
+    const defaultCode = `#include <bits/stdc++.h>
 using namespace std;
+
 int main(){
 
     return 0;
-}`
-    );
+}`;
+
+const [code, setCode] = useState(defaultCode);
     const navigate = useNavigate();
     const API_URL = "http://15.206.166.192/api";
 
     useEffect(() => {
         fetchProblem();
     },[]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            localStorage.setItem(`code-${id}`,code);
+        },1000);
+
+        return () => clearTimeout(timer);
+    }, [code,id]);
 
     async function runCode(){
         try{
@@ -80,6 +89,13 @@ int main(){
             );
 
             setProblem(res.data);
+            const savedcode = localStorage.getItem(`code-${id}`);
+
+            if(savedcode){
+                setCode(savedcode);
+            }else{
+                setCode(defaultCode);
+            }
 
         }catch(err){
             console.log(err.response?.data);
