@@ -55,7 +55,10 @@ function CodeEditor({ code, setCode }) {
                     insertSpaces: true,
                     detectIndentation: false,
                     formatOnPaste: true,
-                    formatOnType: true
+                    formatOnType: true,
+                    bracketPairColorization:{
+                        enabled: false
+                    }
                 }}
             />
         </div>
