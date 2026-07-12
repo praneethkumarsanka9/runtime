@@ -11,38 +11,40 @@ function CodeEditor({ code, setCode }) {
             inherit: true,
 
             rules: [
-                { token: "delimiter.bracket", foreground: "A7F3D0" },
-                { token: "delimiter.parenthesis", foreground: "A7F3D0" },
-                { token: "delimiter.curly", foreground: "A7F3D0" },
-                { token: "delimiter.square", foreground: "A7F3D0" },
-
-                { token: "keyword", foreground: "FFFFFF", fontStyle: "bold" },
-                { token: "string", foreground: "F7F7F7" },
-                { token: "number", foreground: "FFF4C2" },
-                { token: "comment", foreground: "E0DBFF", fontStyle: "italic" },
-                { token: "type", foreground: "FFFFFF" }
+                { token: "keyword", foreground: "C8B6FF", fontStyle: "bold" },
+                { token: "string", foreground: "A8E6CF" },
+                { token: "number", foreground: "FFD166" },
+                { token: "comment", foreground: "7D8597", fontStyle: "italic" },
+                { token: "type", foreground: "8EECF5" },
+                { token: "identifier", foreground: "F8F8FF" }
             ],
 
             colors: {
+    "editor.background": "#1A1733",
 
-                "editor.background": "#9f99f1",
+    "editor.foreground": "#F8F8FF",
 
-                "editor.foreground": "#FFFFFF",
+    "editorCursor.foreground": "#C8B6FF",
 
-                "editorCursor.foreground": "#FFFFFF",
+    "editor.selectionBackground": "#5D4E99AA",
 
-                "editor.selectionBackground": "#B8B2FF",
+    "editor.lineHighlightBackground": "#252047",
 
-                "editor.lineHighlightBackground": "#A59CFF",
+    "editorLineNumber.foreground": "#6E6A99",
 
-                "editorLineNumber.foreground": "#DCD6FF",
+    "editorLineNumber.activeForeground": "#FFFFFF",
 
-                "editorLineNumber.activeForeground": "#FFFFFF",
+    "editorIndentGuide.background": "#38345E",
 
-                "editorIndentGuide.background": "#B8B2FF",
+    "editorIndentGuide.activeBackground": "#C8B6FF",
 
-                "editorIndentGuide.activeBackground": "#FFFFFF"
-            }
+    "editorBracketHighlight.foreground1": "#FFD166",
+    "editorBracketHighlight.foreground2": "#72EFDD",
+    "editorBracketHighlight.foreground3": "#FF8FA3",
+    "editorBracketHighlight.foreground4": "#A0C4FF",
+    "editorBracketHighlight.foreground5": "#C8B6FF",
+    "editorBracketHighlight.foreground6": "#F4A261"
+}
         });
     }
 
