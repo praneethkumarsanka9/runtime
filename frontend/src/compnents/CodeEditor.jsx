@@ -11,6 +11,11 @@ function CodeEditor({ code, setCode }) {
             inherit: true,
 
             rules: [
+                { token: "delimiter.bracket", foreground: "A7F3D0" },
+                { token: "delimiter.parenthesis", foreground: "A7F3D0" },
+                { token: "delimiter.curly", foreground: "A7F3D0" },
+                { token: "delimiter.square", foreground: "A7F3D0" },
+
                 { token: "keyword", foreground: "FFFFFF", fontStyle: "bold" },
                 { token: "string", foreground: "F7F7F7" },
                 { token: "number", foreground: "FFF4C2" },
@@ -20,7 +25,7 @@ function CodeEditor({ code, setCode }) {
 
             colors: {
 
-                "editor.background": "#9892e9",
+                "editor.background": "#9f99f1",
 
                 "editor.foreground": "#FFFFFF",
 
@@ -55,10 +60,7 @@ function CodeEditor({ code, setCode }) {
                     insertSpaces: true,
                     detectIndentation: false,
                     formatOnPaste: true,
-                    formatOnType: true,
-                    bracketPairColorization:{
-                        enabled: false
-                    }
+                    formatOnType: true
                 }}
             />
         </div>
