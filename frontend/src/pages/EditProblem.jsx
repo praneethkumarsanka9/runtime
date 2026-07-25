@@ -14,12 +14,10 @@ function EditProblem(){
     const API_URL = "http://15.206.166.192/api";
     async function getProblem(){
         try{
-            const token = localStorage.getItem("token");
             const res = await axios.get(
-                `${API_URL}/problems/${id}`,{
-                    headers:{
-                        Authorization: token
-                    }
+                `${API_URL}/problems/${id}`,
+                {
+                    withCredentials: true
                 }
             );
             setTitle(res.data.title);
@@ -32,7 +30,6 @@ function EditProblem(){
     }
     async function editData(){
         try{
-            const token = localStorage.getItem("token");
             await axios.put(
                 `${API_URL}/problems/${id}`,
                 {
@@ -42,9 +39,7 @@ function EditProblem(){
                     testcases: JSON.parse(testcases)
                 },
                 {
-                    headers:{
-                        Authorization: token
-                    }
+                    withCredentials: true
                 }
             );
             alert("Problem Edited");

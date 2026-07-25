@@ -39,14 +39,12 @@ const [code, setCode] = useState(defaultCode);
 
     async function runCode(){
         try{
-            setOutput("Running...")
-            const token = localStorage.getItem("token");
+            setOutput("Running...");
             const res = await axios.post(`${API_URL}/run`,{
                 code,input
-            },{
-                headers:{
-                    Authorization: token
-                }
+            },
+            {
+                withCredentials: true
             });
 
             setOutput(res.data.output);
@@ -60,13 +58,11 @@ const [code, setCode] = useState(defaultCode);
         setOutput("Evaluating your code...");
         const problemId = id;
         try{
-            const token = localStorage.getItem("token");
             const res = await axios.post(`${API_URL}/submit`,{
                 problemId,code
-            },{
-                headers:{
-                    Authorization: token
-                }
+            },
+            {
+                withCredentials: true
             });
             alert(res.data.verdict);
             setOutput(res.data.verdict);
@@ -78,14 +74,12 @@ const [code, setCode] = useState(defaultCode);
 
     async function fetchProblem(){
         try{
-            const token = localStorage.getItem("token");
 
             const res = await axios.get(
-                `${API_URL}/problems/${id}`,{
-                    headers:{
-                        Authorization: token
-                    }
-                }
+                `${API_URL}/problems/${id}`,
+            {
+                withCredentials: true
+            }
             );
 
             setProblem(res.data);

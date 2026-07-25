@@ -22,14 +22,11 @@ function Problems(){
 
     async function markDone(id){
         try{
-            const token = localStorage.getItem("token");
             await axios.post(`${API_URL}/complete`,
                 {id},
-                {
-                    headers:{
-                        Authorization: token
-                    }
-                }
+            {
+                withCredentials: true
+            }
             )
             setComplete(prev => {
                 if(prev.includes(id)){
@@ -48,13 +45,11 @@ function Problems(){
  
     async function fetchProblems(){
         try{
-            const token = localStorage.getItem("token");
             const res = await axios.get(
-                `${API_URL}/problems`,{
-                    headers:{
-                        Authorization: `${token}`
-                    }
-                }
+                `${API_URL}/problems`,
+            {
+                withCredentials: true
+            }
             );
             setProblems(res.data.problems);
             setComplete(res.data.completed);
@@ -70,11 +65,9 @@ function Problems(){
 
     async function deleteProblem(id){
         try{
-            const token = localStorage.getItem("token");
-            await axios.delete(`${API_URL}/problems/${id}`,{
-                headers:{
-                    Authorization: token
-                }
+            await axios.delete(`${API_URL}/problems/${id}`,
+            {
+                withCredentials: true
             });
             setProblems(prev => prev.filter(p => p._id !== id));
             setComplete(prev => prev.filter(pid => pid !== id));

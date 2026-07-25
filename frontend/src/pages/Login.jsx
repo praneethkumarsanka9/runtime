@@ -15,7 +15,10 @@
       async function handle(e){
         e.preventDefault();
         try{
-          const res = await axios.post(`${API_URL}/login`,{email,password});
+          const res = await axios.post(`${API_URL}/login`,{email,password},
+            {
+                withCredentials: true
+            });
           localStorage.setItem("token",res.data.token);
           navigate("/problems",{replace: true});
         }catch(err){

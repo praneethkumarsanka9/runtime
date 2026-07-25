@@ -20,11 +20,16 @@ const nodemailer = require("nodemailer");
 const path = require("path");
 const admin = require("./middleware/admin");
 const rateLimit = require("express-rate-limit");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 
 app.use(express.json({limit: "200kb"}));
-app.use(cors());
+app.use(cors({
+    origin: "http://15.206.166.192",
+    credentials: true
+}));
+app.use(cookieParser());
 
 const transporter = nodemailer.createTransport({
      service: "gmail",
@@ -327,6 +332,12 @@ app.post("/login",loginLimiter,async(req,res)=>{
                 expiresIn: "30d"
             }
         );
+        res.cookie("token",token,{
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 30 * 24 * 60 * 60 * 1000
+        });
         res.json({
             message: "Login successful",
             token

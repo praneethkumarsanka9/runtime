@@ -14,7 +14,6 @@ function AddProblem(){
 
     async function addProblem(){
         try{
-            const token = localStorage.getItem("token");
             await axios.post(
                 `${API_URL}/problems`,
                 {
@@ -24,9 +23,7 @@ function AddProblem(){
                     testcases: JSON.parse(testcases)
                 },
                 {
-                    headers:{
-                        Authorization: token
-                    }
+                    withCredentials: true
                 }
             );
 
