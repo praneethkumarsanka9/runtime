@@ -6,57 +6,109 @@ const path = require("path");
 
 const execPromise = util.promisify(exec);
 
-async function judgeSubmission(code , testcases){
-        const folder = crypto.randomUUID();
-        const folderPath = path.join(process.cwd(), "temp", folder);
-        fs.mkdirSync(folderPath, { recursive: true });
-        try{
-        fs.writeFileSync(path.join(folderPath, "temp.cpp"), code);
-        try{
-            await execPromise(`docker run --rm -v "${folderPath}:/app" cpp-runner:latest bash -c "cd /app && g++ temp.cpp -o run"`);
-        }catch(err){
-            console.log(err);
+async function judgeSubmission(code, testcases) {
+    const folder = crypto.randomUUID();
+    const folderPath = path.join(process.cwd(), "temp", folder);
+
+    fs.mkdirSync(folderPath, { recursive: true });
+
+    let containerId = null;
+
+    try {
+        fs.writeFileSync(
+            path.join(folderPath, "temp.cpp"),
+            code
+        );
+
+        const { stdout: id } = await execPromise(
+            `docker create --memory=512m --cpus=0.5 -v "${folderPath}:/app" cpp-runner:latest sleep infinity`
+        );
+
+        containerId = id.trim();
+
+        await execPromise(
+            `docker start ${containerId}`
+        );
+
+        try {
+            await execPromise(
+                `docker exec ${containerId} bash -c "cd /app && g++ temp.cpp -o run"`
+            );
+        } catch (err) {
             return {
                 verdict: "Compilation error",
                 error: err.stderr || err.message
             };
         }
+
         let c = 1;
-        for(const testcase of testcases){
-            fs.writeFileSync(path.join(folderPath, "input.txt"),testcase.input);
-            let stdout;
-            try{
-                let {stdout} = await execPromise(`docker run --rm --memory=512m --cpus=0.5 -v "${folderPath}:/app" cpp-runner:latest bash -c "cd /app && timeout 2s ./run < input.txt"`);
-                if( stdout.trim() !== testcase.output.trim() ){
-                    return{
+
+        for (const testcase of testcases) {
+            fs.writeFileSync(
+                path.join(folderPath, "input.txt"),
+                testcase.input
+            );
+
+            try {
+                const { stdout } = await execPromise(
+                    `docker exec ${containerId} bash -c "cd /app && timeout 2s ./run < input.txt"`
+                );
+
+                if (stdout.trim() !== testcase.output.trim()) {
+                    return {
                         verdict: "Wrong answer",
                         failedTestCase: c
                     };
                 }
-            }catch(err){
-                if(err.code == 124 || err.code === "ERR_CHILD_PROCESS_STDIO_MAXBUFFER"){
-                    return{
-                        verdict: "Time Limit Exceeded"
+            } catch (err) {
+                if (err.code === 124) {
+                    return {
+                        verdict: "Time Limit Exceeded",
+                        failedTestCase: c
                     };
                 }
+
                 return {
                     verdict: "Runtime error",
+                    failedTestCase: c,
                     error: err.stderr || err.message
                 };
             }
+
             c++;
         }
+
         return {
             verdict: "Accepted"
         };
-        }catch(err){
-            
-        }finally{
-            fs.rmSync(folderPath, {
-                recursive: true,
-                force: true
-            });
+
+    } catch (err) {
+        console.error("Judge error:", err);
+
+        return {
+            verdict: "Judge error",
+            error: err.message
+        };
+
+    } finally {
+        if (containerId) {
+            try {
+                await execPromise(
+                    `docker rm -f ${containerId}`
+                );
+            } catch (err) {
+                console.error(
+                    "Failed to remove container:",
+                    err.message
+                );
+            }
         }
+
+        fs.rmSync(folderPath, {
+            recursive: true,
+            force: true
+        });
+    }
 }
 
 module.exports = judgeSubmission;
