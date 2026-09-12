@@ -1,10 +1,39 @@
+import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 
 function ProtectedRoute({children}){
-    const token = localStorage.getItem("token");
-    if(!token){
-        return <Navigate to="/login"/>
+    const [loading,setLoading] = useState(true);
+    const [authenticated,setAuthenticated] = useState(false);
+    const API_URL = "http://15.206.166.192/api";
+
+    useEffect(()=>{
+        async function checkAuth(){
+            try{
+                await axios.get(`${API_URL}/auth/me`,{
+                    withCredentials: true
+                });
+
+                setAuthenticated(true);
+            }catch(err){
+                setAuthenticated(false);
+            }finally{
+                setLoading(false);
+            }
+        }
+
+        checkAuth();
+    },[]);
+
+    const msg = "Loading :)";
+
+    if(loading){
+        return <div>{msg}</div>;
     }
+
+    if(!authenticated){
+        return <Navigate to="/login" replace/>
+    }
+
     return children;
 }
 

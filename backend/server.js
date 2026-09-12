@@ -150,9 +150,21 @@ app.get("/profile",auth,(req,res)=>{
     });
 });
 
-app.get("/me",auth,async (req,res)=>{
-    const user = await User.findById(req.user.id).select("-password");
-    res.json(user);
+app.get("/auth/me",auth,async (req,res)=>{
+    try{
+        const user = await User.findById(req.user.id).select("-password");
+
+        if(!user){
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+        res.json(user);
+    }catch(err){
+        re.status(500).json({
+            message: "Server error"
+        });
+    }
 });
 
 app.get("/submissions",auth,async(req,res)=>{
@@ -339,8 +351,7 @@ app.post("/login",loginLimiter,async(req,res)=>{
             maxAge: 30 * 24 * 60 * 60 * 1000
         });
         res.json({
-            message: "Login successful",
-            token
+            message: "Login successful"
         });
     } catch(err){
         res.status(500).json({

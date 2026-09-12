@@ -19,7 +19,6 @@
             {
                 withCredentials: true
             });
-          localStorage.setItem("token",res.data.token);
           navigate("/problems",{replace: true});
         }catch(err){
           console.log(err.response.data);
