@@ -10,7 +10,7 @@ function AddProblem(){
     const [difficulty,setDifficulty] = useState("Easy");
     const [description, setDescription] = useState("");
     const [testcases, setTestcases] = useState("");
-    const API_URL = "http://15.206.166.192/api";
+    const API_URL = "http://65.0.93.233/api";
 
     async function addProblem(){
         try{

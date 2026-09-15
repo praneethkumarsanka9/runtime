@@ -10,7 +10,7 @@
       const [password,setPassword] = useState("");
       const[message,setMessage] = useState("");
       const navigate = useNavigate();
-      const API_URL = "http://15.206.166.192/api";
+      const API_URL = "http://65.0.93.233/api";
 
       async function handle(e){
         e.preventDefault();

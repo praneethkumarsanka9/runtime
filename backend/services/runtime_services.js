@@ -21,7 +21,7 @@ async function judgeSubmission(code, testcases) {
         );
 
         const { stdout: id } = await execPromise(
-            `docker create --memory=512m --cpus=0.5 -v "${folderPath}:/app" cpp-runner:latest sleep infinity`
+            `docker create --memory=300m --cpus=0.5 -v "${folderPath}:/app" cpp-runner:latest sleep infinity`
         );
 
         containerId = id.trim();

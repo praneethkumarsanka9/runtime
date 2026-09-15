@@ -5,7 +5,7 @@ import axios from "axios";
 function ProtectedRoute({children}){
     const [loading,setLoading] = useState(true);
     const [authenticated,setAuthenticated] = useState(false);
-    const API_URL = "http://15.206.166.192/api";
+    const API_URL = "http://65.0.93.233/api";
 
     useEffect(()=>{
         async function checkAuth(){
