@@ -1,6 +1,6 @@
 const { Worker } = require("bullmq");
 const mongoose = require("mongoose");
-require("dotenv").config({ path: "../.env" });
+require("dotenv").config();
 
 const Submission = require("../models/submission");
 const Problem = require("../models/problem");
