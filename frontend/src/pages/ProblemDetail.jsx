@@ -77,7 +77,7 @@ const [code, setCode] = useState(defaultCode);
 
                 const verdict = statusRes.data.verdict;
 
-                if(verdict !== "Pending" || verdict !== "Running"){
+                if(verdict !== "Pending" && verdict !== "Running"){
                     setOutput(verdict);
                     alert(verdict);
                     return;
