@@ -64,8 +64,31 @@ const [code, setCode] = useState(defaultCode);
             {
                 withCredentials: true
             });
-            alert(res.data.verdict);
-            setOutput(res.data.verdict);
+            
+
+            const submissionId = res.data.submissionId;
+
+            let elapsed = 0;
+
+            while(elapsed < 60000){
+                const statusRes = await axios.get(`${API_URL}/submission.${submissionId}`,{
+                    withCredentials: true
+                });
+
+                const verdict = statusRes.data.verdict;
+
+                if(verdict !== "Pending" || verdict !== "Running"){
+                    setOutput(verdict);
+                    alert(verdict);
+                    return;
+                }
+
+                await new promise(resolve => setTimeout(resolve,1000)); 
+
+                elapsed += 1000;
+            }
+
+            setOutput("Submission is taking too long. Please try again later.");
         }catch(err){
             console.log(err.response?.data);
             setOutput("Something went wrong");

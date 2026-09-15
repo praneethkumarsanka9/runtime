@@ -21,6 +21,7 @@ const path = require("path");
 const admin = require("./middleware/admin");
 const rateLimit = require("express-rate-limit");
 const cookieParser = require("cookie-parser");
+const submissionQueue = require("./queue");
 
 const app = express();
 
@@ -89,23 +90,6 @@ const submitLimiter = rateLimit({
 app.get("/",(req,res)=>{
     res.send("RunTime Backend is running successfully");
 });
-
-app.get("/hello",(req,res)=>{
-    res.json({
-        message: "Hello from Express"
-    });
-});
-
-const problems = [
-    {
-        id: 1,
-        title: "Two Sum"
-    },
-    {
-        id: 2,
-        title: "Palindrome Number"
-    }
-];
 
 app.get("/problems",auth,async(req,res)=>{
     try{
@@ -369,7 +353,7 @@ app.post("/run",auth,runLimiter,async(req,res)=>{
     fs.writeFileSync(path.join(folderPath, "temp.cpp"),code);
     fs.writeFileSync(path.join(folderPath, "input.txt"),input);
     try{
-        const {stdout} = await execPromise(`docker run --rm --memory=512m --cpus=0.5 -v "${folderPath}:/app" cpp-runner:latest bash -c "cd /app && g++ temp.cpp -o run && timeout 2s ./run < input.txt"`);
+        const {stdout} = await execPromise(`docker run --rm --memory=300m --cpus=0.5 -v "${folderPath}:/app" cpp-runner:latest bash -c "cd /app && g++ temp.cpp -o run && timeout 2s ./run < input.txt"`);
         res.json({
             output: stdout
         }); 
@@ -421,34 +405,47 @@ app.post("/submit",submitLimiter,auth,async(req,res)=>{
             problem:req.body.problemId,
             code: req.body.code
     });
-    const problem = await Problem.findById(submission.problem);
-    if(!problem){
-        res.status(404).json({
-            message: "Problem not found"
-        });
-    }
-    const result = await judgeSubmission(submission.code,problem.testcases);
-    submission.verdict = result.verdict;
-    if(submission.verdict === "Accepted"){
-    const id = problem._id.toString();
-    const user = await User.findById(req.user.id);
-    const exists = user.completed.some(
-        p => p.problemId.toString() === id
-    );
-    if(!exists){
-        user.completed.push({
-            problemId: id
-        });
-    }
-    await user.save();
-    }       
-    await submission.save();
-    res.status(200).json({
-            submissionId : submission._id,
-            ...result
+    
+    await submissionQueue.add("judge-submission",{
+        submissionId: submission._id.toString()
+    });
+
+    res.status(202).json({
+        submissionId: submission._id,
+        verdict: submission.verdict
     });
     }catch(err){
         console.log(err);
+        res.status(500).json({
+            message: "Server error"
+        });
+    }
+});
+
+app.get("/submission/:id", auth, async (req, res) => {
+    try {
+        const submission = await Submission.findById(req.params.id);
+
+        if (!submission) {
+            return res.status(404).json({
+                message: "Submission not found"
+            });
+        }
+
+        if (submission.user.toString() !== req.user.id.toString()) {
+            return res.status(403).json({
+                message: "Not authorized"
+            });
+        }
+
+        res.status(200).json({
+            submissionId: submission._id,
+            verdict: submission.verdict
+        });
+
+    } catch (err) {
+        console.log(err);
+
         res.status(500).json({
             message: "Server error"
         });
