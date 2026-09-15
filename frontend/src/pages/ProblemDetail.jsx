@@ -83,7 +83,7 @@ const [code, setCode] = useState(defaultCode);
                     return;
                 }
 
-                await new promise(resolve => setTimeout(resolve,1000)); 
+                await new Promise(resolve => setTimeout(resolve,1000)); 
 
                 elapsed += 1000;
             }
