@@ -27,7 +27,7 @@ const app = express();
 
 app.use(express.json({limit: "200kb"}));
 app.use(cors({
-    origin: "http://65.0.93.233/",
+    origin: "http://65.0.93.233",
     credentials: true
 }));
 app.use(cookieParser());
