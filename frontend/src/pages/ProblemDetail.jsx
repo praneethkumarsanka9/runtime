@@ -71,7 +71,7 @@ const [code, setCode] = useState(defaultCode);
             let elapsed = 0;
 
             while(elapsed < 60000){
-                const statusRes = await axios.get(`${API_URL}/submission.${submissionId}`,{
+                const statusRes = await axios.get(`${API_URL}/submission/${submissionId}`,{
                     withCredentials: true
                 });
 
