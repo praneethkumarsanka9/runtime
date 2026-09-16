@@ -5,6 +5,7 @@ require("dotenv").config();
 const Submission = require("../models/submission");
 const Problem = require("../models/problem");
 const judgeSubmission = require("../services/runtime_services");
+const User = require("../models/user");
 
 mongoose.connect(process.env.MONGO_URL)
     .then(() => {
@@ -40,6 +41,25 @@ const worker = new Worker(
 
         submission.verdict = result.verdict;
         await submission.save();
+
+        if(result.verdict === "Accepted"){
+            const user = await User.findById(submission.user);
+            if(user){
+                const problemId = problem._id.toString();
+
+                const exists = user.completed.some(
+                    p => p.problemId.toString() === problemId
+                );
+
+                if(!exists){
+                    user.completed.push({
+                        problemId: problem._id
+                    });
+
+                    await user.save();
+                }
+            }
+        }
     },{
         connection:{
             host: "127.0.0.1",
