@@ -24,7 +24,7 @@ function Register(){
             console.log("success");
             setTimeout(() => {
                 navigate("/login");
-            },2000);
+            },5000);
         }catch(err){
             setUsername("");
             setEmail("");
